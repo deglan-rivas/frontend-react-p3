@@ -6,7 +6,6 @@ import Spinner from './components/Spinner'
 import Resultado from './components/Resultado'
 
 import imagenCriptos from './img/imagen-criptos.png'
-import { monedas } from '../03-criptos-react-FIN/src/data/monedas'
 
 const Contenedor = styled.div`
   max-width: 900px;
