@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
+import { useEffect, useState } from 'react'
 
-import { monedas } from '../data/monedas.js'
+import { poolMonedas } from '../data/monedas.js'
 import useSelectMonedas from '../hooks/useSelectMonedas'
 
 import Error from './Error.jsx'
@@ -23,19 +24,54 @@ const InputSubmit = styled.input`
   }
 `
 
-const Formulario = () => {
-  const [monedasClasicas, SelectMonedasClasicas] =  useSelectMonedas( 'Elige tu Moneda', monedas)
-  const [monedasCriptos, SelectMonedasCriptos] =  useSelectMonedas( 'Elige tu Cripto', monedas)
+const Formulario = ({setMonedasEscogidas}) => {
+  const [poolCriptos, setPoolCriptos] = useState([])
+  const [error, setError] = useState('')
 
-  const handleSubmit = () => ("")
+  const [monedasClasicas, SelectMonedasClasicas] =  useSelectMonedas( 'Elige tu Moneda', poolMonedas)
+  const [monedasCriptos, SelectMonedasCriptos] =  useSelectMonedas( 'Elige tu Cripto', poolCriptos)
+
+  useEffect( () => {
+    const getCriptosFromAPI = async () => {
+      const url = 'https://min-api.cryptocompare.com/data/top/mktcapfull?limit=20&tsym=USD'
+      const respuesta = await fetch(url)
+      const resultado = await respuesta.json()
+
+      const poolCriptosFormated = resultado.Data.map( cripto => ({
+        id: cripto.CoinInfo.Name,
+        nombre: cripto.CoinInfo.FullName
+      }))
+      setPoolCriptos(poolCriptosFormated)
+    }
+
+    getCriptosFromAPI()
+  }, [])
+
+  const handleSubmit = e => {
+    e.preventDefault()
+
+    if ([monedasClasicas, monedasCriptos].includes('')) {
+      setError('Todos los campos son obligatorios')
+      return
+    }
+
+    setError('')
+    setMonedasEscogidas({
+      monedasClasicas,
+      monedasCriptos
+    })
+  }
 
   return (
     <form 
-      onChange={handleSubmit}
+      onSubmit={handleSubmit}
     >
-      <Error>
-        Todos los campos son obligatorios
-      </Error>
+      {error && 
+        <Error>
+          {error}
+        </Error>
+      }
+
       
       <SelectMonedasClasicas/>
       <SelectMonedasCriptos/>

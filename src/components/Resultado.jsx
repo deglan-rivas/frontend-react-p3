@@ -1,7 +1,5 @@
 import styled from "@emotion/styled"
 
-import imagenCriptos from '../img/imagen-criptos.png'
-
 const Contenedor = styled.div`
   color: #FFF;
   font-family: 'Lato', sans-serif;
@@ -30,20 +28,24 @@ const Precio = styled.p`
   }
 `
 
-const Resultado = () => (
-  <Contenedor>
-    <Imagen 
-      src={imagenCriptos} 
-      alt="imagen cripto" 
-    />
-    <div>
-      <Precio>El Precio es de: <span>Ga</span></Precio>
-      <Texto>Precio más alto del día: <span>Ga</span></Texto>
-      <Texto>Precio más bajo del día: <span>Ga</span></Texto>
-      <Texto>Variación últimas 24 horas: <span>Ga</span></Texto>
-      <Texto>Última Actualización: <span>Ga</span></Texto>
-    </div>
-  </Contenedor>
-)
+const Resultado = ({resultado}) => {
+  const {IMAGEURL, PRICE, HIGHDAY, LOWDAY, CHANGEPCT24HOUR, LASTUPDATE} = resultado
+
+  return (
+    <Contenedor>
+      <Imagen 
+        src={`https://cryptocompare.com/${IMAGEURL}`} 
+        alt="imagen cripto" 
+      />
+      <div>
+        <Precio>El Precio es de: <span>{PRICE}</span></Precio>
+        <Texto>Precio más alto del día: <span>{HIGHDAY}</span></Texto>
+        <Texto>Precio más bajo del día: <span>{LOWDAY}</span></Texto>
+        <Texto>Variación últimas 24 horas: <span>{CHANGEPCT24HOUR}</span></Texto>
+        <Texto>Última Actualización: <span>{LASTUPDATE}</span></Texto>
+      </div>
+    </Contenedor>
+  )
+}
 
 export default Resultado

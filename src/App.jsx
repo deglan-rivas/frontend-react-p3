@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import styled from '@emotion/styled'
 
 import Formulario from './components/Formulario'
@@ -6,6 +6,7 @@ import Spinner from './components/Spinner'
 import Resultado from './components/Resultado'
 
 import imagenCriptos from './img/imagen-criptos.png'
+import { monedas } from '../03-criptos-react-FIN/src/data/monedas'
 
 const Contenedor = styled.div`
   max-width: 900px;
@@ -45,6 +46,33 @@ const Heading = styled.h1`
 `
 
 function App() {
+  const [monedasEscogidas, setMonedasEscogidas] = useState({})
+  const [resultado, setResultado] = useState({})
+  const [isChecking, setIsChecking] = useState(false)
+
+  useEffect( () => {
+    if (Object.keys(monedasEscogidas).length) {
+
+      const convertirMonedas = async () => {
+        
+        setResultado({})
+        setIsChecking(true)
+    
+        const { monedasClasicas, monedasCriptos } = monedasEscogidas
+        const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${monedasCriptos}&tsyms=${monedasClasicas}`
+        const respuesta = await fetch(url)
+        const conversion = await respuesta.json()
+    
+        setResultado(conversion['DISPLAY'][monedasCriptos][monedasClasicas])
+        setIsChecking(false)
+    
+      }
+      
+
+      convertirMonedas()
+    }
+
+  }, [monedasEscogidas])
 
   return (
     <Contenedor>
@@ -59,12 +87,18 @@ function App() {
         </Heading>
 
         <Formulario
-        
+          setMonedasEscogidas = {setMonedasEscogidas}
         />
 
-        <Spinner/>
+        {isChecking && 
+          <Spinner/>
+        }
 
-        <Resultado/>
+        {Object.keys(resultado).length !== 0 && 
+          <Resultado
+            resultado = {resultado}
+          />
+        }
       </div>
     </Contenedor>
   )
